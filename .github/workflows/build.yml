@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -32,3 +35,13 @@ jobs:
         with:
           name: tvos-home-apk
           path: build/tvos-home.apk
+
+      - name: Publish public download link
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --cleanup-tag --yes || true
+          gh release create latest build/tvos-home.apk \
+            --title "Latest build" \
+            --notes "Direct APK download for Android TV / Google TV." \
+            --target "$GITHUB_SHA"
