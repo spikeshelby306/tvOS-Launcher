@@ -841,7 +841,7 @@ public final class Scenes {
     }
 
     public static String getClockStyle(Context c) {
-        return prefs(c).getString("clock_style", CLOCK_STYLE_DUO);
+        return prefs(c).getString("clock_style", CLOCK_STYLE_ROUNDED);
     }
 
     public static void setClockStyle(Context c, String style) {

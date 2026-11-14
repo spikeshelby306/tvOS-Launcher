@@ -1696,49 +1696,7 @@ public class SettingsActivity extends Activity {
         infoNote(tr("Security Note: Keep Alive is enabled by default. In Secure Mode, tvOS Launcher uses WRITE_SECURE_SETTINGS to restore Accessibility directly in-process without touching ADB (even if ADB is enabled on the TV). In Persistent ADB Mode, Keep Alive can also use Local ADB on port 5555.",
                 "Güvenlik Notu: Keep Alive varsayılan olarak açıktır. Güvenli Mod'da tvOS Launcher, ADB'yi hiç kullanmadan (TV'de ADB açık olsa bile) Erişilebilirliği doğrudan WRITE_SECURE_SETTINGS ile onarır. Kalıcı ADB Modu'nda ise port 5555 üzerinden yerel ADB'yi de kullanabilir."));
 
-        section(tr("CLEANYOURTV (BETA)", "CLEANYOURTV (BETA)"));
-        twoLineRow(tr("Choose TV model", "TV modelini seçin"),
-                () -> CleanYourTv.getSelectedModelSummary(this),
-                () -> {
-                    cytAutoContinueToDebloat = false;
-                    openSubMenu("cyt_models");
-                });
-        row(tr("Debloat status", "Debloat durumu"),
-                () -> advDebloatSummary != null ? advDebloatSummary : "…",
-                () -> openSubMenu("cyt_saved"));
-        row(tr("Debloat TV…", "TV Debloat Başlat…"),
-                () -> tr("Start ›", "Başlat ›"),
-                () -> {
-                    if (CleanYourTv.getSelectedModelSlug(this).isEmpty()) {
-                        cytAutoContinueToDebloat = true;
-                        openSubMenu("cyt_models");
-                    } else {
-                        cytChecklistItems = null;
-                        openSubMenu("cyt_debloat");
-                    }
-                });
-        row(tr("Disable system launchers…", "Sistem başlatıcılarını devre dışı bırak…"),
-                () -> advLaunchersSummary != null ? advLaunchersSummary : "…",
-                () -> openSubMenu("cyt_launchers"));
-        row(tr("Manual debloat (All system apps)…", "Manuel debloat (Tüm sistem uygulamaları)…"),
-                () -> tr("Advanced ›", "Gelişmiş ›"),
-                this::promptManualDebloatWarning);
-        row(tr("Disabled apps backup", "Devre dışı bırakılan uygulamalar kaydı"),
-                () -> advSavedSummary != null ? advSavedSummary : "…",
-                () -> openSubMenu("cyt_saved"));
-        row(tr("Restore debloated apps…", "Debloat edilen uygulamaları geri yükle…"),
-                () -> tr("Restore ›", "Geri Yükle ›"),
-                () -> openSubMenu("cyt_restore"));
-        row(tr("Ad-blocking Private DNS (AdGuard)", "Reklam engelleyici Özel DNS (AdGuard)"),
-                () -> CleanYourTv.isAdguardDnsActive(this) ? tr("On", "Açık") : tr("Off", "Kapalı"),
-                () -> CleanYourTv.toggleAdguardDns(this, this::refreshAll));
 
-        infoNote(tr("CleanYourTV (Beta) runs the CleanYourTV debloat profiles directly on your TV over Local ADB without needing a PC. Choose your TV model (or scan by installed system app packages), disable stock launchers or bloatware, and restore them anytime with one tap.",
-                "CleanYourTV (Beta), bilgisayara ihtiyaç duymadan CleanYourTV debloat profillerini Yerel ADB üzerinden doğrudan TV'nizde çalıştırır. TV modelinizi seçin (veya yüklü sistem uygulaması paketlerine göre tarayın), stok başlatıcıları veya gereksiz uygulamaları devre dışı bırakın ve istediğiniz zaman tek dokunuşla geri yükleyin."));
-
-        // Expensive PackageManager scans (launchers, debloat status) run off the UI thread so the
-        // page's first frames aren't blocked; rows show "…" until the values arrive.
-        loadAdvancedSummariesAsync();
         if (LocalAdb.getAdbMode(this) == LocalAdb.ADB_MODE_PERSISTENT) {
             LocalAdb.probePortAsync(this, () -> runOnUiThread(() -> {
                 if (!isFinishing()) refreshAll();
